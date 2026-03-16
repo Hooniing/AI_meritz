@@ -1,0 +1,96 @@
+sources:
+  - company: "삼성화재"
+    country: "KR"
+    category: "nonlife"
+    source_type: "official_pr"
+    enabled: true
+    list_url: "https://www.samsungfire.com/sfmi/ui/m/etcsv/market/MO_MK_Press.html"
+    parser_type: "generic_links"
+
+  - company: "DB손해보험"
+    country: "KR"
+    category: "nonlife"
+    source_type: "official_pr"
+    enabled: false
+    list_url: ""
+    parser_type: "generic_links"
+
+  - company: "KB손해보험"
+    country: "KR"
+    category: "nonlife"
+    source_type: "official_pr"
+    enabled: false
+    list_url: ""
+    parser_type: "generic_links"
+
+  - company: "메리츠화재"
+    country: "KR"
+    category: "nonlife"
+    source_type: "official_pr"
+    enabled: false
+    list_url: ""
+    parser_type: "generic_links"
+
+  - company: "현대해상"
+    country: "KR"
+    category: "nonlife"
+    source_type: "official_pr"
+    enabled: false
+    list_url: ""
+    parser_type: "generic_links"
+
+  - company: "삼성생명"
+    country: "KR"
+    category: "life"
+    source_type: "official_pr"
+    enabled: false
+    list_url: ""
+    parser_type: "generic_links"
+
+  - company: "교보생명"
+    country: "KR"
+    category: "life"
+    source_type: "official_pr"
+    enabled: false
+    list_url: ""
+    parser_type: "generic_links"
+
+  - company: "한화생명"
+    country: "KR"
+    category: "life"
+    source_type: "official_pr"
+    enabled: false
+    list_url: ""
+    parser_type: "generic_links"
+
+  - company: "신한라이프"
+    country: "KR"
+    category: "life"
+    source_type: "official_pr"
+    enabled: false
+    list_url: ""
+    parser_type: "generic_links"
+
+  - company: "NH농협생명"
+    country: "KR"
+    category: "life"
+    source_type: "official_pr"
+    enabled: false
+    list_url: ""
+    parser_type: "generic_links"
+
+  - company: "금융규제샌드박스"
+    country: "KR"
+    category: "regulatory"
+    source_type: "sandbox"
+    enabled: true
+    list_url: "https://fintechcenter.or.kr/business/enterprise.do?id=151&lang=ko"
+    parser_type: "generic_links"
+
+  - company: "Allianz"
+    country: "DE"
+    category: "global"
+    source_type: "official_global"
+    enabled: false
+    list_url: ""
+    parser_type: "generic_links"

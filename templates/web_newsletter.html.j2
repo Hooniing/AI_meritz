@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>{{ issue.title }}</title>
+  <style>
+    body{margin:0;background:#f5f7fb;font-family:Arial,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#1f2937}
+    .wrap{max-width:900px;margin:0 auto;padding:24px}
+    .card{background:#fff;border-radius:12px;padding:24px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+    .item{border:1px solid #e5e7eb;border-radius:10px;padding:18px;margin-bottom:16px}
+    .btn{display:inline-block;padding:10px 16px;background:#1f4acc;color:#fff;text-decoration:none;border:0;border-radius:6px;font-weight:600;cursor:pointer}
+    .btn.secondary{background:#475569}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px 8px;border-bottom:1px solid #e5e7eb;text-align:left}
+  </style>
+  <script>
+    function copyLink(url){
+      navigator.clipboard.writeText(url).then(()=>alert('링크가 복사되었습니다.'));
+    }
+  </script>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>{{ issue.title }}</h1>
+      <div style="color:#6b7280;margin-bottom:20px;">발행일 {{ issue.issue_date }} · 대상 기간 {{ issue.period_start }} ~ {{ issue.period_end }}</div>
+
+      <div style="background:#eef4ff;border-radius:10px;padding:18px 20px;margin-bottom:24px;white-space:pre-line;">{{ issue.intro_summary }}</div>
+
+      <h2>이번 주 메인 기사 10선</h2>
+      {% for article in issue.main_articles %}
+      <div class="item">
+        <div style="color:#2563eb;font-weight:700;margin-bottom:8px;">{{ loop.index }}.</div>
+        <div style="font-size:22px;font-weight:700;margin-bottom:10px;">{{ article.title }}</div>
+        <div style="color:#6b7280;font-size:13px;margin-bottom:12px;">{{ article.company }} · {{ article.published_at }}</div>
+        <div style="line-height:1.7;white-space:pre-line;margin-bottom:10px;">{{ article.summary }}</div>
+        <div style="line-height:1.7;margin-bottom:14px;"><strong>시사점:</strong> {{ article.implication }}</div>
+        <a class="btn" href="{{ article.url }}" target="_blank">원본 보러 가기</a>
+        <button class="btn secondary" onclick="copyLink('{{ article.url }}')">원본 링크 복사하기</button>
+      </div>
+      {% endfor %}
+
+      <h2>그 외 볼만한 기사</h2>
+      <table>
+        <thead><tr><th>순번</th><th>기사 제목</th><th>링크 기능</th></tr></thead>
+        <tbody>
+          {% for article in issue.extra_articles %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ article.title }}</td>
+            <td>
+              <a href="{{ article.url }}" target="_blank">원본 보러 가기</a>
+              &nbsp;|&nbsp;
+              <a href="javascript:void(0)" onclick="copyLink('{{ article.url }}')">원본 링크 복사하기</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>
