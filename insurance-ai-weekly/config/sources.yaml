@@ -11,16 +11,16 @@ sources:
     country: "KR"
     category: "nonlife"
     source_type: "official_pr"
-    enabled: false
-    list_url: ""
+    enabled: true
+    list_url: "https://www.idbins.com/pc/bizxpress/contentTemplet/cmy/pr/news/list.jsp"
     parser_type: "generic_links"
 
   - company: "KB손해보험"
     country: "KR"
     category: "nonlife"
     source_type: "official_pr"
-    enabled: false
-    list_url: ""
+    enabled: true
+    list_url: "https://insight.kbinsure.co.kr/"
     parser_type: "generic_links"
 
   - company: "메리츠화재"
@@ -28,7 +28,7 @@ sources:
     category: "nonlife"
     source_type: "official_pr"
     enabled: false
-    list_url: ""
+    list_url: "https://m.meritzgroup.com/mo/ko/pr/pr1.do"
     parser_type: "generic_links"
 
   - company: "현대해상"
@@ -36,7 +36,7 @@ sources:
     category: "nonlife"
     source_type: "official_pr"
     enabled: false
-    list_url: ""
+    list_url: "https://www.hi.co.kr/serviceAction.do?view=bin%2FKC%2F00%2FHHKC00000M"
     parser_type: "generic_links"
 
   - company: "삼성생명"
@@ -44,39 +44,39 @@ sources:
     category: "life"
     source_type: "official_pr"
     enabled: false
-    list_url: ""
+    list_url: "https://www.samsunglife.com/individual/display/intro/PDK-MAMAI000000M"
     parser_type: "generic_links"
 
   - company: "교보생명"
     country: "KR"
     category: "life"
     source_type: "official_pr"
-    enabled: false
-    list_url: ""
+    enabled: true
+    list_url: "https://news.kyobo.com/"
     parser_type: "generic_links"
 
   - company: "한화생명"
     country: "KR"
     category: "life"
     source_type: "official_pr"
-    enabled: false
-    list_url: ""
+    enabled: true
+    list_url: "https://company.hanwhalife.com/ko/about/company-overview/newsroom"
     parser_type: "generic_links"
 
   - company: "신한라이프"
     country: "KR"
     category: "life"
     source_type: "official_pr"
-    enabled: false
-    list_url: ""
+    enabled: true
+    list_url: "https://www.shinhanlife.co.kr/hp/cdhh0090.do"
     parser_type: "generic_links"
 
   - company: "NH농협생명"
     country: "KR"
     category: "life"
     source_type: "official_pr"
-    enabled: false
-    list_url: ""
+    enabled: true
+    list_url: "https://www.nhlife.co.kr/ho/ci/HOCI0010M00.nhl"
     parser_type: "generic_links"
 
   - company: "금융규제샌드박스"
@@ -91,6 +91,6 @@ sources:
     country: "DE"
     category: "global"
     source_type: "official_global"
-    enabled: false
-    list_url: ""
+    enabled: true
+    list_url: "https://www.allianz.com/en/mediacenter/news/media-releases.html"
     parser_type: "generic_links"
