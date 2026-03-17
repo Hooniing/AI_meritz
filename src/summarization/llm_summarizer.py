@@ -1,11 +1,3 @@
-import os
-import json
-import logging
-from openai import OpenAI
-
-logger = logging.getLogger(__name__)
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
 def summarize_article(article):
     text = article.raw_text.strip()
 
@@ -41,18 +33,34 @@ URL: {article.url}
 
     logger.info("Calling OpenAI summarizer for %s", article.title)
 
-    response = client.responses.create(
-        model="gpt-5-mini",
-        input=prompt
-    )
-
-    output = response.output_text.strip()
+    try:
+        response = client.responses.create(
+            model="gpt-5-mini",
+            input=prompt
+        )
+        output = response.output_text.strip()
+    except Exception as e:
+        logger.exception("OpenAI summarization failed for %s: %s", article.title, e)
+        short = text[:280].strip()
+        if len(text) > 280:
+            short += "..."
+        article.summary = short
+        article.implication = "LLM 요약 실패로 원문 축약본을 대체 사용했습니다."
+        article.tags = []
+        return article
 
     try:
         parsed = json.loads(output)
         article.summary = parsed.get("summary", "").strip()
         article.implication = parsed.get("implication", "").strip() or "보험업 내 실제 운영 적용 범위와 확장성을 추가 확인할 필요가 있습니다."
         article.tags = parsed.get("tags", [])
+
+        if not article.summary:
+            short = text[:280].strip()
+            if len(text) > 280:
+                short += "..."
+            article.summary = short
+            
     except Exception:
         logger.exception("Failed to parse OpenAI JSON response for %s", article.title)
         article.summary = output
@@ -88,9 +96,17 @@ def build_intro(main_articles):
 {joined[:14000]}
 """
 
-    response = client.responses.create(
-        model="gpt-5-mini",
-        input=prompt
-    )
-
-    return response.output_text.strip()
+    try:
+        response = client.responses.create(
+            model="gpt-5-mini",
+            input=prompt
+        )
+        return response.output_text.strip()
+    except Exception as e:
+        logger.exception("OpenAI intro generation failed: %s", e)
+        companies = ", ".join(dict.fromkeys([a.company for a in main_articles[:5]]))
+        return (
+            f"이번 주에는 {companies} 중심으로 보험업 내 AI 도입 및 자동화 관련 흐름이 포착되었습니다.\n"
+            f"전반적으로 고객상담, 문서 자동화, 심사·보험금 지급 프로세스와 연결되는 사례가 확인되었습니다.\n"
+            f"국내 보험사는 공식 보도자료와 제도권 공시를 통해 실제 적용 방향을 드러내고 있습니다."
+        )
