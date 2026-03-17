@@ -31,7 +31,7 @@ jobs:
           NEWSLETTER_TO: ${{ secrets.NEWSLETTER_TO }}
           NEWSLETTER_FROM: ${{ secrets.NEWSLETTER_FROM }}
         run: |
-          python -m src.main
+          python -m src.main --send          ## 테스트는 여기서
           echo "==== generated files ===="
           find data || true
           find . -name "*.html" || true
