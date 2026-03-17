@@ -34,7 +34,7 @@ jobs:
           echo "SMTP_USER is set"
           echo "NEWSLETTER_FROM is set"
           echo "NEWSLETTER_TO is set"
-          python -m src.main --send
+          python -m src.main --dry-run
 
       - name: Upload newsletter artifacts
         uses: actions/upload-artifact@v4
