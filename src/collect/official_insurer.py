@@ -32,14 +32,42 @@ def _extract_links(list_url: str):
         results.append((title, url))
     return results[:50]
 
+REMOVE_SELECTORS = [
+    "script", "style", "nav", "header", "footer", "aside",
+    ".gnb", ".lnb", ".nav", ".footer", ".header", ".breadcrumb",
+    ".quick", ".menu", ".sitemap"
+]
+
+CONTENT_SELECTORS = [
+    "article",
+    ".article_view",
+    ".article-body",
+    ".board_view",
+    ".board-contents",
+    ".news_view",
+    ".news-detail",
+    ".contents",
+    ".content",
+    "#content"
+]
+
 def _extract_article_text(url: str) -> str:
     html = fetch_html(url)
     soup = BeautifulSoup(html, "lxml")
-    for sel in ["article", ".article", ".content", ".contents", "#content", "body"]:
+
+    for sel in REMOVE_SELECTORS:
+        for node in soup.select(sel):
+            node.decompose()
+
+    for sel in CONTENT_SELECTORS:
         node = soup.select_one(sel)
         if node:
-            return node.get_text("\n", strip=True)[:8000]
-    return soup.get_text("\n", strip=True)[:8000]
+            text = node.get_text("\n", strip=True)
+            if len(text) > 200:
+                return text[:12000]
+
+    body = soup.body.get_text("\n", strip=True) if soup.body else soup.get_text("\n", strip=True)
+    return body[:12000]
 
 def collect_from_source(source: dict, start_date: date, end_date: date, min_article_length: int = 80):
     results = []
