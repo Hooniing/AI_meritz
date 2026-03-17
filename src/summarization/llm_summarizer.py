@@ -1,3 +1,12 @@
+import os
+import json
+import logging
+from openai import OpenAI
+
+logger = logging.getLogger(__name__)
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+
 def summarize_article(article):
     text = article.raw_text.strip()
 
@@ -52,7 +61,10 @@ URL: {article.url}
     try:
         parsed = json.loads(output)
         article.summary = parsed.get("summary", "").strip()
-        article.implication = parsed.get("implication", "").strip() or "보험업 내 실제 운영 적용 범위와 확장성을 추가 확인할 필요가 있습니다."
+        article.implication = (
+            parsed.get("implication", "").strip()
+            or "보험업 내 실제 운영 적용 범위와 확장성을 추가 확인할 필요가 있습니다."
+        )
         article.tags = parsed.get("tags", [])
 
         if not article.summary:
@@ -60,7 +72,7 @@ URL: {article.url}
             if len(text) > 280:
                 short += "..."
             article.summary = short
-            
+
     except Exception:
         logger.exception("Failed to parse OpenAI JSON response for %s", article.title)
         article.summary = output
@@ -72,8 +84,12 @@ URL: {article.url}
 
 
 def build_intro(main_articles):
+    if not main_articles:
+        return "이번 주에는 수집된 주요 기사가 충분하지 않았습니다."
+
     joined = "\n\n".join(
-        f"[{a.company}] {a.title}\n{a.summary}" for a in main_articles[:10]
+        f"[{a.company}] {a.title}\n요약: {getattr(a, 'summary', '')}\n시사점: {getattr(a, 'implication', '')}"
+        for a in main_articles[:10]
     )
 
     prompt = f"""
@@ -88,6 +104,7 @@ def build_intro(main_articles):
 - 제도/혁신금융서비스 관련 내용이 있으면 별도 한 문장으로 반영
 - 해외 사례는 국내 실무 참고 가치가 높을 때만 짧게 반영
 - 과장 금지, 투자홍보 문구 금지
+- 한국어로만 작성
 
 출력 형식:
 - 완성된 5문장 이하의 한국어 문단만 출력
@@ -96,12 +113,16 @@ def build_intro(main_articles):
 {joined[:14000]}
 """
 
+    logger.info("Calling OpenAI intro generator")
+
     try:
         response = client.responses.create(
             model="gpt-5-mini",
             input=prompt
         )
-        return response.output_text.strip()
+        intro = response.output_text.strip()
+        logger.info("OpenAI intro generation completed")
+        return intro
     except Exception as e:
         logger.exception("OpenAI intro generation failed: %s", e)
         companies = ", ".join(dict.fromkeys([a.company for a in main_articles[:5]]))
