@@ -1,12 +1,10 @@
-from pathlib import Path
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-def render_issue(issue, template_name: str, out_path: str):
+
+def render_email_html(issue):
     env = Environment(
         loader=FileSystemLoader("templates"),
-        autoescape=select_autoescape(["html", "xml"])
+        autoescape=select_autoescape(["html", "xml"]),
     )
-    tpl = env.get_template(template_name)
-    html = tpl.render(issue=issue)
-    Path(out_path).write_text(html, encoding="utf-8")
-    return html
+    tpl = env.get_template("email_newsletter.html.j2")
+    return tpl.render(issue=issue)
