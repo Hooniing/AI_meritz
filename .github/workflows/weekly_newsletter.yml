@@ -21,14 +21,6 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Upload newsletter artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: newsletter-preview
-          path: |
-            data/archive/**
-          if-no-files-found: warn
-
       - name: Run newsletter pipeline
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -44,4 +36,10 @@ jobs:
           echo "NEWSLETTER_TO is set"
           python -m src.main --send
 
-        
+      - name: Upload newsletter artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: newsletter-preview
+          path: |
+            data/archive/**
+          if-no-files-found: warn
