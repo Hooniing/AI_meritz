@@ -30,4 +30,4 @@ jobs:
           SMTP_PASS: ${{ secrets.SMTP_PASS }}
           NEWSLETTER_TO: ${{ secrets.NEWSLETTER_TO }}
           NEWSLETTER_FROM: ${{ secrets.NEWSLETTER_FROM }}
-        run: python -m src.main --send
+        run: python -m src.main --dry-run
