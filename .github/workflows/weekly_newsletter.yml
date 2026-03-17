@@ -30,8 +30,9 @@ jobs:
           SMTP_PASS: ${{ secrets.SMTP_PASS }}
           NEWSLETTER_TO: ${{ secrets.NEWSLETTER_TO }}
           NEWSLETTER_FROM: ${{ secrets.NEWSLETTER_FROM }}
+    # 테스트: python -m src.main, 메일발송: python -m src.main --send # 
         run: |
-          python -m src.main --send          ## 테스트는 여기서
+          python -m src.main --send         
           echo "==== generated files ===="
           find data || true
           find . -name "*.html" || true
