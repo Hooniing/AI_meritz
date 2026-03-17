@@ -2,7 +2,7 @@ name: Weekly Insurance AI Newsletter
 
 on:
   schedule:
-    - cron: "0 23 * * 0"   # Monday 08:00 KST
+    - cron: "0 23 * * 0"
   workflow_dispatch:
 
 jobs:
@@ -30,16 +30,17 @@ jobs:
           SMTP_PASS: ${{ secrets.SMTP_PASS }}
           NEWSLETTER_TO: ${{ secrets.NEWSLETTER_TO }}
           NEWSLETTER_FROM: ${{ secrets.NEWSLETTER_FROM }}
-        run: 
-          echo "SMTP_USER is set"
-          echo "NEWSLETTER_FROM is set"
-          echo "NEWSLETTER_TO is set"
-          python -m src.main --dry-run
+        run: |
+          python -m src.main
+          echo "==== generated files ===="
+          find data || true
+          find . -name "*.html" || true
 
       - name: Upload newsletter artifacts
         uses: actions/upload-artifact@v4
         with:
           name: newsletter-preview
           path: |
-            data/archive/**
+            data/archive/**/*.html
+            data/archive/**/*.json
           if-no-files-found: warn
