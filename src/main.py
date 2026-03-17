@@ -56,22 +56,15 @@ def main(send: bool = False):
         except Exception as e:
             logger.exception("Failed source %s: %s", source["company"], e)
 
-    # 정제
     for a in articles:
         a.raw_text = clean_text(a.raw_text)
 
-    # 스코어링
     for a in articles:
         a.score = score_article(a, scoring)
 
-    # 점수순 정렬
     articles = sorted(articles, key=lambda x: x.score, reverse=True)
+    articles = articles[: settings.get("max_candidates", 30)]
 
-    # 최대 후보 수 제한
-    max_candidates = settings.get("max_candidates", 30)
-    articles = articles[:max_candidates]
-
-    # 먼저 메인/추가 기사 분리
     main_articles, extra_articles = select_main_and_extra(
         articles,
         settings["main_article_count"],
@@ -89,7 +82,7 @@ def main(send: bool = False):
     for a in main_articles:
         summarize_article(a)
 
-    # 추가 20건은 표용이므로 summary/implication 비움
+    # 추가 20건은 표용
     for a in extra_articles:
         if not getattr(a, "summary", None):
             a.summary = ""
@@ -101,15 +94,13 @@ def main(send: bool = False):
     intro_summary = build_intro(main_articles)
 
     issue = NewsletterIssue(
-        issue_date=issue_date,
-        period_start=period_start,
-        period_end=period_end,
+        title=settings.get("newsletter_title", "보험 AI Weekly"),
+        issue_date=str(issue_date),
+        period_start=str(period_start),
+        period_end=str(period_end),
         intro_summary=intro_summary,
-        key_insights=[],
         main_articles=main_articles,
         extra_articles=extra_articles,
-        email_html_path="",
-        web_html_path="",
     )
 
     archive_dir = Path("data/archive") / str(issue_date)
@@ -123,9 +114,6 @@ def main(send: bool = False):
 
     email_html_path.write_text(email_html, encoding="utf-8")
     web_html_path.write_text(web_html, encoding="utf-8")
-
-    issue.email_html_path = str(email_html_path)
-    issue.web_html_path = str(web_html_path)
 
     logger.info("Generated newsletter: %s", email_html_path)
     logger.info("Generated newsletter web view: %s", web_html_path)
