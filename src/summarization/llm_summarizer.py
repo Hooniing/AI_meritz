@@ -1,20 +1,71 @@
+import os
+from openai import OpenAI
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
 def summarize_article(article):
     text = article.raw_text.strip()
-    short = text[:280].strip()
-    if len(text) > 280:
-        short += "..."
-    article.summary = f"{short}\n\n핵심은 {article.company} 관련 AI 도입/활용 흐름이 기사 본문에서 확인된다는 점입니다."
-    article.implication = "단순 홍보성 언급보다 실제 업무 적용 범위와 운영 효율화 연결 가능성을 확인할 필요가 있습니다."
+
+    prompt = f"""
+다음 보험 관련 기사 본문을 읽고 한국어로 정리해줘.
+
+요구사항:
+1. 헤드라인성 요약 2~3문장
+2. 보험사 AI 도입 관점의 시사점 1문장
+3. 과장 없이 사실 중심
+4. 불필요한 메뉴/네비게이션 텍스트는 무시
+5. 출력 형식:
+SUMMARY: ...
+IMPLICATION: ...
+
+기사 본문:
+{text[:6000]}
+"""
+
+    response = client.responses.create(
+        model="gpt-5-mini",
+        input=prompt
+    )
+
+    output = response.output_text.strip()
+
+    summary = output
+    implication = ""
+
+    if "IMPLICATION:" in output:
+        parts = output.split("IMPLICATION:", 1)
+        summary = parts[0].replace("SUMMARY:", "").strip()
+        implication = parts[1].strip()
+    else:
+        summary = output.replace("SUMMARY:", "").strip()
+
+    article.summary = summary
+    article.implication = implication or "보험업 내 실제 운영 적용 범위와 확장성을 추가 확인할 필요가 있습니다."
     return article
 
+
 def build_intro(main_articles):
-    if not main_articles:
-        return "이번 주에는 수집된 주요 기사가 충분하지 않았습니다."
-    companies = ", ".join(dict.fromkeys([a.company for a in main_articles[:5]]))
-    return (
-        f"이번 주에는 {companies} 중심으로 보험업 내 AI 도입 및 자동화 관련 흐름이 포착되었습니다.\n"
-        "전반적으로 고객상담, 문서 자동화, 심사·보험금 지급 프로세스 고도화와 연결되는 사례가 많았습니다.\n"
-        "국내 보험사는 공식 보도자료와 제도권 공시를 통해 실제 적용 방향을 드러내고 있습니다.\n"
-        "혁신금융서비스 관련 항목은 제도 기반 실증·확대 신호로 해석할 수 있습니다.\n"
-        "해외 사례는 선택적으로 반영해 국내 실무에 참고할 만한 내용만 추렸습니다."
+    joined = "\n\n".join(
+        f"[{a.company}] {a.title}\n{a.summary}" for a in main_articles[:10]
     )
+
+    prompt = f"""
+다음 주간 보험 AI 기사 요약들을 바탕으로
+뉴스레터 서론 5문장을 한국어로 써줘.
+
+조건:
+- 국내 보험사 중심
+- 이번 주 흐름을 총평하는 문장
+- 업무 효율화/자동화/도입 시사점 포함
+- 과장 없이 담백하게
+
+자료:
+{joined[:12000]}
+"""
+
+    response = client.responses.create(
+        model="gpt-5-mini",
+        input=prompt
+    )
+
+    return response.output_text.strip()
